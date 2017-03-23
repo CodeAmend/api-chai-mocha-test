@@ -1,14 +1,15 @@
-process.env.NODE_ENV = 'test';
-
 // MongooseError: Cannot overwrite `book` model once compiled.
 // deleting require cache seems to help
-Object.keys(require.cache).map(key => { delete require.cache[key] })
+Object.keys(require.cache).map(key => { delete require.cache[key] });
+process.env.NODE_ENV = 'test';
+
 let mongoose = require('mongoose');
 let Book = require('../controllers/models/book');
 
 // require dev dependencies
 let chai = require('chai');
 let should = chai.should();
+let assert = chai.assert;
 let chaiHttp = require('chai-http');
 let server = require('../server');
 
@@ -110,5 +111,60 @@ describe("Books", () => {
     });
 
   }); // /GET/:id book
+
+  describe("/PUT/:id book", () => {
+    it("should UPDATE a book given the id", (done) => {
+      let temp_book = new Book({
+        title: 'The Chronic',
+        author: 'Busta',
+        year: 1955,
+        pages: 4500
+      });
+      temp_book.save((err, book) => {
+        chai.request(server)
+          .put(`/book/${book.id}`)
+          .send({
+            title: 'Not The Chronic',
+            author: 'Not Busta',
+            year: 1,
+            pages: 1000
+          })
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.book.title.should.eql("Not The Chronic");
+            res.body.book.author.should.eql("Not Busta");
+            res.body.book.year.should.eql(1);
+            res.body.book.pages.should.eql(1000);
+            assert.equal(book._id, temp_book._id.toString());
+            done();
+          });
+      });
+    });
+  }); // /PUT/:id book
+
+  describe("/DELETE/:id book", () => {
+    it("should DELETE book with id", (done) => {
+      let book = new Book({
+        title: 'The book that got deleted',
+        author: 'Bad Author',
+        year: 1455,
+        pages: 377
+      });
+      book.save((err, book) => {
+        chai.request(server)
+          .delete(`/book/${book.id}`)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message')
+              .eql('Book successfully deleted!');
+            res.body.result.should.have.property('n').eql(1);
+            res.body.result.should.have.property('ok').eql(1);
+            done();
+          });
+      });
+    });
+  });
 
 });
