@@ -83,4 +83,32 @@ describe("Books", () => {
     });
   });
 
+  describe("/GET/:id book", () => {
+
+    it("should GET a book by given id", (done) => {
+      let tempBook = new Book({
+        title: 'The Best Book Ever',
+        author: 'Steven',
+        year: 1911,
+        pages: 45
+      });
+      tempBook.save((err, book) => {
+        chai.request(server)
+          .get(`/book/${book._id}`)
+          .send(book)
+          .end((err, res) => {
+            res.should.have.status(200)
+            res.body.should.be.a('object');
+            res.body.should.have.property('title').eql("The Best Book Ever");
+            res.body.should.have.property('author').eql("Steven");
+            res.body.should.have.property('year').eql(1911);
+            res.body.should.have.property('pages').eql(45);
+            res.body.should.have.property('_id').eql(book.id);
+            done();
+          });
+      });
+    });
+
+  }); // /GET/:id book
+
 });
