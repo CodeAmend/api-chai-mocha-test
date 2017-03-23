@@ -36,9 +36,9 @@ app.get('/', (req, res) => res.json({ message: "Welcome to the bookstore" }))
 
 app.route('/book')
   .get(book.getBooks)
-  // .post(book.postBook);
-// app.route('/book/:id')
-//   .get(book.getBook)
+  .post(book.postBook);
+app.route('/book/:id')
+  .get(book.getBook)
 //   .delete(book.deleteBook)
 //   .put(book.updateBook)
 
