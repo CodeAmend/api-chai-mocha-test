@@ -42,7 +42,10 @@ app.route('/book/:id')
   .delete(book.deleteBook)
   .put(book.updateBook);
 
-app.listen(port);
+if (!module.parent) {
+  app.listen(port);
+}
+
 console.log("Listening to port: ", port);
 
 // export for testing purposes.

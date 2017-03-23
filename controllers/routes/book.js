@@ -1,6 +1,10 @@
 let mongoose = require('mongoose');
 let Book = require('../models/book');
 
+let log = (msg) => {
+  console.log("\n\n\nSTART\n\n", msg)
+}
+
 function getBooks(req, res) {
   // GET route to recieve ALL books
   let query = Book.find({});
@@ -15,8 +19,9 @@ function getBooks(req, res) {
 function postBook(req, res) {
     let newBook = new Book(req.body);
     newBook.save((err, book) => {
-      if (err) {
-        res.send(err);
+
+      if (err.errors.pages) {
+        res.status(206).send(err);
       } else {
         res.json({ message: "Book successfully added!", book });
       };
