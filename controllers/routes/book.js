@@ -14,7 +14,7 @@ function getBooks(req, res) {
 
 function postBook(req, res) {
     let newBook = new Book(req.body);
-    newBoook.save((err, book) => {
+    newBook.save((err, book) => {
       if (err) {
         res.send(err);
       } else {
@@ -25,15 +25,15 @@ function postBook(req, res) {
 
 function getBook(req, res) {
   Book.findById(req.params.id, (err, book) => {
+    if (err) res.send(err);
+    res.json(book);
   });
-  if (err) res.send(err);
-  res.json(book);
 }
 
 function deleteBook(req, res) {
   Book.remove({ _id: req.params.id }, (err, result) => {
     if (err) res.send(err);
-    res.json({ message: "Book successfully deleted! " }, result);
+    res.json({ message: "Book successfully deleted!", result });
   });
 }
 
