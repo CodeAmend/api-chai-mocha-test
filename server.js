@@ -40,7 +40,7 @@ app.route('/book')
 app.route('/book/:id')
   .get(book.getBook)
   .delete(book.deleteBook)
-//   .put(book.updateBook)
+  .put(book.updateBook);
 
 app.listen(port);
 console.log("Listening to port: ", port);
