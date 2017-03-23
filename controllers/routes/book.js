@@ -19,9 +19,9 @@ function getBooks(req, res) {
 function postBook(req, res) {
     let newBook = new Book(req.body);
     newBook.save((err, book) => {
-
-      if (err.errors.pages) {
+      if (err) {
         res.status(206).send(err);
+
       } else {
         res.json({ message: "Book successfully added!", book });
       };

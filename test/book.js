@@ -8,9 +8,13 @@ let Book = require('../controllers/models/book');
 
 // require dev dependencies
 let chai = require('chai');
-let should = chai.should;
+let should = chai.should();
 let chaiHttp = require('chai-http');
 let server = require('../server');
+
+const log = (msg) => {
+  console.log.bind(console, "\n\n\n")(msg);
+}
 
 chai.use(chaiHttp);
 
@@ -24,7 +28,7 @@ describe("Books", () => {
       chai.request(server)
         .get('/book')
         .end((err, res) => {
-          res.should.have.status(200);
+          // res.should.have.status(200);
           res.body.should.be.a('array');
           res.body.length.should.eql(0);
           done();
@@ -44,7 +48,7 @@ describe("Books", () => {
         .send(book)
         .end((err, res) => {
           // 206 Partial Content
-          res.should.have.status(206);
+          res.should.have.status(206)
           res.body.should.be.a('object');
           res.body.should.have
             .property('errors')
@@ -54,7 +58,29 @@ describe("Books", () => {
           done();
         });
     });
+    it("should POST a book with all fields", (done) => {
+      let book = {
+        title: "Non-Binaray Femenist",
+        author: "Chet Angel",
+        pages: 455,
+        year: 1985
+      }
+      chai.request(server)
+        .post('/book')
+        .send(book)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have
+            .property('message')
+            .eql("Book successfully added!");
+          res.body.book.should.have.property('title')
+          res.body.book.should.have.property('author')
+          res.body.book.should.have.property('pages')
+          res.body.book.should.have.property('year')
+          done();
+      });
+    });
   });
-
 
 });
